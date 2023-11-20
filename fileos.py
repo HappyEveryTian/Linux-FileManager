@@ -174,11 +174,47 @@ class dispose(QtWidgets.QTabWidget):
         except Exception as e:
             print(f"创建文件或文件夹时出现错误: {e}")
             
-    def delete(self):   #删除文件
-        row = ui.listWidget.currentRow()
-        file_name = ui.listWidget.currentItem().text()
-        os.remove(str(dir) + "/" + str(file_name))
-        ui.listWidget.takeItem(row)
+    def show_message_box(self, title, message):
+        QMessageBox.warning(self, title, message, QMessageBox.Ok)
+
+    def remove_from_list_widget(self, item):
+        ui.listWidget.takeItem(ui.listWidget.row(item))
+
+    def delete(self):
+        try:
+            current_item = ui.listWidget.currentItem()
+            if current_item is None:
+                self.show_message_box("错误", "未选择任何文件")
+                return
+            
+            file_name = current_item.text()
+            location = os.path.join(dir, file_name)
+
+            if os.path.exists(location):
+                confirmation = QMessageBox.question(
+                    self, "确认删除",
+                    f"你确定要删除 '{file_name}' 吗？\n此操作无法撤销。",
+                    QMessageBox.Yes | QMessageBox.No, QMessageBox.NoButton
+                )
+
+                if confirmation == QMessageBox.Yes:
+                    if os.path.isfile(location):
+                        os.remove(location)
+                        self.remove_from_list_widget(current_item)
+                    elif os.path.isdir(location):
+                        shutil.rmtree(location)
+                        self.remove_from_list_widget(current_item)
+                else:
+                    return
+            else:
+                self.show_message_box("错误", "路径不存在。")
+
+        except FileNotFoundError:
+            self.show_message_box("错误", f"文件 '{file_name}' 不存在。")
+        except PermissionError:
+            self.show_message_box("错误", f"没有权限删除文件 '{file_name}'。")
+        except Exception as e:
+            self.show_message_box("错误", f"发生错误: {str(e)}")
 
     def open(self):     #打开文件(夹)
         try:
