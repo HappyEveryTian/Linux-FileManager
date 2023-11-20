@@ -125,26 +125,52 @@ class dispose(QtWidgets.QTabWidget):
 
     def touch(self):  # 创建文件或文件夹
         try:
+            if ui.listWidget.count() == 0:  # 检查文件列表是否为空
+                QMessageBox.warning(None, "警告", "请先打开文件夹以创建文件或文件夹。", QMessageBox.Ok)
+                return
+
             # 获取最后打开的文件夹路径
             last_opened_directory = os.path.dirname(dir) if 'dir' in globals() else ''
-            # 打开一个对话框，让用户输入文件或文件夹名称
-            file_or_folder_name, ok_pressed = QInputDialog.getText(None, "创建文件或文件夹", "输入文件（文件夹）名称:")
-        
-            # 如果用户点击了对话框的OK按钮并且输入了名称
-            if ok_pressed and file_or_folder_name:
+            
+            while True:  # 循环直到用户输入一个新的文件名或取消创建
+                # 打开一个对话框，让用户输入文件或文件夹名称
+                file_or_folder_name, ok_pressed = QInputDialog.getText(None, "创建文件或文件夹", "输入文件（文件夹）名称:")
+                
+                # 如果用户点击了取消按钮或者未输入名称，退出循环
+                if not ok_pressed or not file_or_folder_name:
+                    break
+                
                 file_path = os.path.join(dir, file_or_folder_name)
                 if '.' in file_or_folder_name:
-                    # 创建文件
-                    with open(file_path, 'w') as file:
-                        pass  # 在这里进行文件操作，比如写入内容
-                    print(f"文件 '{file_path}' 创建成功。")
+                    if os.path.exists(file_path):  # 检查文件是否已存在
+                        while True:  # 循环直到用户重新输入一个新的文件名或取消创建
+                            reply = QMessageBox.question(None, "警告", "文件已存在。是否要重新创建文件？", QMessageBox.Yes | QMessageBox.No)
+                            if reply == QMessageBox.Yes:
+                                break  # 用户选择重新输入文件名，退出内层循环
+                            elif reply == QMessageBox.No:
+                                break  # 用户选择取消创建，退出内层循环
+                    if reply == QMessageBox.Yes:
+                        continue  # 用户选择重新输入文件名，继续外层循环
+                    elif reply == QMessageBox.No:
+                        break  # 用户选择取消创建，退出外层循环
+                    else:
+                        # 创建文件
+                        with open(file_path, 'w') as file:
+                            pass  # 在这里进行文件操作，比如写入内容
+                        print(f"文件 '{file_path}' 创建成功。")
+                        # 将新创建的文件名称添加到左侧的文件列表中
+                        ui.listWidget.addItem(file_or_folder_name)
+                        break  # 文件创建成功，退出外层循环
                 else:
-                    # 创建文件夹
-                    os.makedirs(file_path, exist_ok=True)
-                    print(f"文件夹 '{file_path}' 创建成功。")
-            
-                # 将新创建的文件或文件夹名称添加到左侧的文件列表中
-                ui.listWidget.addItem(file_or_folder_name)
+                    if os.path.exists(file_path):  # 检查文件夹是否已存在
+                        QMessageBox.warning(None, "警告", "文件夹已存在。", QMessageBox.Ok)
+                    else:
+                        # 创建文件夹
+                        os.makedirs(file_path, exist_ok=True)
+                        print(f"文件夹 '{file_path}' 创建成功。")
+                        # 将新创建的文件夹名称添加到左侧的文件列表中
+                        ui.listWidget.addItem(file_or_folder_name)
+                        break  # 文件夹创建成功，退出外层循环
         except Exception as e:
             print(f"创建文件或文件夹时出现错误: {e}")
             
