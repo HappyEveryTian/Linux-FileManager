@@ -123,28 +123,31 @@ class dispose(QtWidgets.QTabWidget):
         for i in file:
             ui.listWidget.addItem(i)
 
-    def touch(self):    #创建文件
-        #QInputDialog.getText是一个方法，用于打开一个对话框，让用户输入一个字符串。
-        #参数None表示对话框的父窗口，"选择保存路径"是对话框的标题
-        #这个方法会返回一个元组，第一个元素是用户输入的字符串，第二个元素是一个布尔值，表示用户是否点击了对话框的OK按钮。
-        # 创建一个窗口，仅用于获取文件夹路径
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        folder_path, _ = QFileDialog.getSaveFileName(None, "选择保存的路径", "", options=options)
-
-        # 检查是否选择了路径
-        if folder_path:
-            # 检查文件名中是否有后缀
-            if '.' in os.path.basename(folder_path):
-                # 如果有后缀，则创建文件
-                with open(folder_path, 'w') as file:
-                    pass  # 在这里进行文件操作，比如写入内容
-                print(f"File '{folder_path}' created.")
-            else:
-                # 如果没有后缀，则创建文件夹
-                os.makedirs(folder_path, exist_ok=True)
-                print(f"Folder '{folder_path}' created.")
-
+    def touch(self):  # 创建文件或文件夹
+        try:
+            # 获取最后打开的文件夹路径
+            last_opened_directory = os.path.dirname(dir) if 'dir' in globals() else ''
+            # 打开一个对话框，让用户输入文件或文件夹名称
+            file_or_folder_name, ok_pressed = QInputDialog.getText(None, "创建文件或文件夹", "输入文件（文件夹）名称:")
+        
+            # 如果用户点击了对话框的OK按钮并且输入了名称
+            if ok_pressed and file_or_folder_name:
+                file_path = os.path.join(dir, file_or_folder_name)
+                if '.' in file_or_folder_name:
+                    # 创建文件
+                    with open(file_path, 'w') as file:
+                        pass  # 在这里进行文件操作，比如写入内容
+                    print(f"文件 '{file_path}' 创建成功。")
+                else:
+                    # 创建文件夹
+                    os.makedirs(file_path, exist_ok=True)
+                    print(f"文件夹 '{file_path}' 创建成功。")
+            
+                # 将新创建的文件或文件夹名称添加到左侧的文件列表中
+                ui.listWidget.addItem(file_or_folder_name)
+        except Exception as e:
+            print(f"创建文件或文件夹时出现错误: {e}")
+            
     def delete(self):   #删除文件
         row = ui.listWidget.currentRow()
         file_name = ui.listWidget.currentItem().text()
