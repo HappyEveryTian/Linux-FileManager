@@ -125,13 +125,25 @@ class dispose(QtWidgets.QTabWidget):
 
     def touch(self):    #创建文件
         #QInputDialog.getText是一个方法，用于打开一个对话框，让用户输入一个字符串。
-        #参数None表示对话框的父窗口，"Input a file name"是对话框的标题，"please input a file name"是对话框的提示信息。
+        #参数None表示对话框的父窗口，"选择保存路径"是对话框的标题
         #这个方法会返回一个元组，第一个元素是用户输入的字符串，第二个元素是一个布尔值，表示用户是否点击了对话框的OK按钮。
-        file_name = QInputDialog.getText(None, "Input a file name", "please input a file name")
-        file_name_use = re.search('\'(.*?)\'', str(file_name)).group(1)
-        print(file_name_use)
-        os.mknod(str(dir) + "/" + file_name_use)
-        ui.listWidget.addItem(file_name_use)
+        # 创建一个窗口，仅用于获取文件夹路径
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        folder_path, _ = QFileDialog.getSaveFileName(None, "选择保存的路径", "", options=options)
+
+        # 检查是否选择了路径
+        if folder_path:
+            # 检查文件名中是否有后缀
+            if '.' in os.path.basename(folder_path):
+                # 如果有后缀，则创建文件
+                with open(folder_path, 'w') as file:
+                    pass  # 在这里进行文件操作，比如写入内容
+                print(f"File '{folder_path}' created.")
+            else:
+                # 如果没有后缀，则创建文件夹
+                os.makedirs(folder_path, exist_ok=True)
+                print(f"Folder '{folder_path}' created.")
 
     def delete(self):   #删除文件
         row = ui.listWidget.currentRow()
