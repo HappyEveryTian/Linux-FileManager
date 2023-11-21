@@ -118,7 +118,13 @@ class dispose(QtWidgets.QTabWidget):
         #参数None表示对话框的父窗口，'choose a file'是对话框的标题，'E:/'是对话框的默认路径，QFileDialog.ShowDirsOnly表示只显示文件夹而不显示文件。
         #这个方法会返回用户选择的文件夹的路径。
         global dir, file
-        dir = QFileDialog.getExistingDirectory(None,'choose a file','E:/',QFileDialog.ShowDirsOnly)
+        dir = QFileDialog.getExistingDirectory(None,'choose a file','/',QFileDialog.ShowDirsOnly)
+
+        #检查用户是否点击了取消按钮或关闭了对话框
+        if not dir:
+            return
+
+        #输出文件列表
         file = os.listdir(dir)
         for i in file:
             ui.listWidget.addItem(i)
@@ -142,6 +148,7 @@ class dispose(QtWidgets.QTabWidget):
                 
                 file_path = os.path.join(dir, file_or_folder_name)
                 if '.' in file_or_folder_name:
+                    reply = None
                     if os.path.exists(file_path):  # 检查文件是否已存在
                         while True:  # 循环直到用户重新输入一个新的文件名或取消创建
                             reply = QMessageBox.question(None, "警告", "文件已存在。是否要重新创建文件？", QMessageBox.Yes | QMessageBox.No)
@@ -154,13 +161,13 @@ class dispose(QtWidgets.QTabWidget):
                     elif reply == QMessageBox.No:
                         break  # 用户选择取消创建，退出外层循环
                     else:
-                        # 创建文件
+                        #创建文件
                         with open(file_path, 'w') as file:
                             pass  # 在这里进行文件操作，比如写入内容
-                        print(f"文件 '{file_path}' 创建成功。")
-                        # 将新创建的文件名称添加到左侧的文件列表中
+                        #将新创建的文件名称添加到左侧的文件列表中
                         ui.listWidget.addItem(file_or_folder_name)
-                        break  # 文件创建成功，退出外层循环
+                        #文件创建成功，退出外层循环
+                        break  
                 else:
                     if os.path.exists(file_path):  # 检查文件夹是否已存在
                         QMessageBox.warning(None, "警告", "文件夹已存在。", QMessageBox.Ok)
@@ -173,48 +180,41 @@ class dispose(QtWidgets.QTabWidget):
                         break  # 文件夹创建成功，退出外层循环
         except Exception as e:
             print(f"创建文件或文件夹时出现错误: {e}")
-            
-    def show_message_box(self, title, message):
-        QMessageBox.warning(self, title, message, QMessageBox.Ok)
-
-    def remove_from_list_widget(self, item):
-        ui.listWidget.takeItem(ui.listWidget.row(item))
 
     def delete(self):
         try:
+            #如果未选中文件，则弹出警示框
             current_item = ui.listWidget.currentItem()
             if current_item is None:
                 self.show_message_box("错误", "未选择任何文件")
                 return
             
+            #获取选中的文件
             file_name = current_item.text()
+            #获取完整文件路径
             location = os.path.join(dir, file_name)
 
             if os.path.exists(location):
-                confirmation = QMessageBox.question(
-                    self, "确认删除",
-                    f"你确定要删除 '{file_name}' 吗？\n此操作无法撤销。",
-                    QMessageBox.Yes | QMessageBox.No, QMessageBox.NoButton
-                )
-
+                confirmation = QMessageBox.question(None, "确认删除",f"你确定要删除 '{file_name}' 吗？",QMessageBox.Yes | QMessageBox.No)
+                #删除操作
                 if confirmation == QMessageBox.Yes:
+                    #根据文件或文件夹进行相应的删除
                     if os.path.isfile(location):
                         os.remove(location)
-                        self.remove_from_list_widget(current_item)
+                        ui.listWidget.takeItem(ui.listWidget.row(current_item))
                     elif os.path.isdir(location):
                         shutil.rmtree(location)
-                        self.remove_from_list_widget(current_item)
+                        ui.listWidget.takeItem(ui.listWidget.row(current_item))
+                #如果取消，则返回到主界面
                 else:
                     return
             else:
-                self.show_message_box("错误", "路径不存在。")
+                QMessageBox.warning(None, "警告", "路径不存在!", QMessageBox.Ok)
 
         except FileNotFoundError:
-            self.show_message_box("错误", f"文件 '{file_name}' 不存在。")
+            QMessageBox.warning(None, "警告", "文件不存在!", QMessageBox.Ok)
         except PermissionError:
-            self.show_message_box("错误", f"没有权限删除文件 '{file_name}'。")
-        except Exception as e:
-            self.show_message_box("错误", f"发生错误: {str(e)}")
+            QMessageBox.warning(None, "警告", "没有权限删除文件!", QMessageBox.Ok)
 
     def open(self):     #打开文件(夹)
         try:
