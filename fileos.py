@@ -14,9 +14,21 @@ class Ui_TabWidget(object):
         TabWidget.resize(1300, 800)
         TabWidget.setBaseSize(QtCore.QSize(2, 2))
 
+        #添加一个成员变量获取文件图标：
+        self.icon_provider = QFileIconProvider()
+
         #创建一个标签页
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
+
+        #获取调色板
+        palette = QtGui.QPalette()
+        #设置背景图片
+        palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(QtGui.QPixmap('')))
+        #应用到窗口上
+        self.tab.setPalette(palette)
+        #设置图片自适应窗口
+        self.tab.setAutoFillBackground(True)
 
         #创建文件列表部件
         self.listWidget = QtWidgets.QListWidget(self.tab)
@@ -109,6 +121,11 @@ class Ui_TabWidget(object):
         self.quit.setText(_translate("TabWidget", "退出"))
         self.textbox.setText(_translate("TabWidget",""))
 
+    def get_file_icon(self, file_path):
+        #使用 QFileIconProvider 获取文件图标
+        icon = self.icon_provider.icon(QtCore.QFileInfo(file_path))
+        return icon
+
 class dispose(QtWidgets.QTabWidget):
 
     def __init__(self):
@@ -120,7 +137,7 @@ class dispose(QtWidgets.QTabWidget):
         ui.textbox.clear()
         ui.listWidget.clear()
         #QFileDialog.getExistingDirectory是一个方法，用于打开一个对话框，让用户选择一个文件夹。
-        #参数None表示对话框的父窗口，'choose a file'是对话框的标题，'E:/'是对话框的默认路径，QFileDialog.ShowDirsOnly表示只显示文件夹而不显示文件。
+        #参数None表示对话框的父窗口，'choose a file'是对话框的标题，'/'是对话框的默认路径，QFileDialog.ShowDirsOnly表示只显示文件夹而不显示文件。
         #这个方法会返回用户选择的文件夹的路径。
         global dir, file
         dir = QFileDialog.getExistingDirectory(None,'choose a file','/',QFileDialog.ShowDirsOnly)
@@ -132,9 +149,13 @@ class dispose(QtWidgets.QTabWidget):
         #输出文件列表
         file = os.listdir(dir)
         for i in file:
-            ui.listWidget.addItem(i)
+            file_path = os.path.join(dir, i)
+            item = QtWidgets.QListWidgetItem()
+            item.setIcon(ui.get_file_icon(file_path))
+            item.setText(i)
+            ui.listWidget.addItem(item)
 
-    def touch(self):  # 创建文件或文件夹
+    def touch(self):  #创建文件或文件夹
         try:
             #检查文件列表是否为空
             if ui.listWidget.count() == 0: 
@@ -173,8 +194,14 @@ class dispose(QtWidgets.QTabWidget):
                         #创建文件
                         with open(file_path, 'w') as file:
                             pass
+                        file = os.listdir(dir)
+                        for i in file:
+                            file_path = os.path.join(dir, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui.get_file_icon(file_path))
+                            item.setText(i)
+                            ui.listWidget.addItem(item)
                         #将新创建的文件名称添加到左侧的文件列表中
-                        ui.listWidget.addItem(file_or_folder_name)
                         #文件创建成功，退出外层循环
                         break  
                 else:
@@ -184,19 +211,24 @@ class dispose(QtWidgets.QTabWidget):
                     else:
                         #创建文件夹
                         os.makedirs(file_path, exist_ok=True)
-                        print(f"文件夹 '{file_path}' 创建成功。")
                         #将新创建的文件夹名称添加到左侧的文件列表中
-                        ui.listWidget.addItem(file_or_folder_name)
+                        file = os.listdir(dir)
+                        for i in file:
+                            file_path = os.path.join(dir, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui.get_file_icon(file_path))
+                            item.setText(i)
+                            ui.listWidget.addItem(item)
                         break  
         except Exception as e:
             print(f"创建文件或文件夹时出现错误: {e}")
 
-    def delete(self):
+    def delete(self):   #删除文件（夹）
         try:
             #如果未选中文件，则弹出警示框
             current_item = ui.listWidget.currentItem()
             if current_item is None:
-                self.show_message_box("错误", "未选择任何文件")
+                QMessageBox.warning(None, "警告", "未选择任何文件!", QMessageBox.Ok)
                 return
             
             #获取选中的文件
@@ -227,9 +259,9 @@ class dispose(QtWidgets.QTabWidget):
 
     def open(self):     #打开文件(夹)
         try:
-            # 告诉解释器在该函数内使用全局的 dir 变量
+            #告诉解释器在该函数内使用全局的 dir 变量
             global dir
-            # 获取当前选中的项目
+            #获取当前选中的项目
             try:
                 file_name = ui.listWidget.currentItem().text()
             except AttributeError:
@@ -237,20 +269,24 @@ class dispose(QtWidgets.QTabWidget):
                 return
             position = dir + '/' + str(file_name)
             if os.path.isdir(position):
-            # 如果是文件夹，列出其内容
-                # 更新路径
+            #如果是文件夹，列出其内容
+                #更新路径
                 dir += '/' + str(file_name)
                 ui.textbox.clear()
                 ui.listWidget.clear()
                 file_list = os.listdir(dir)
                 for i in file_list:
-                    ui.listWidget.addItem(i)
+                    file_path = os.path.join(dir, i)
+                    item = QtWidgets.QListWidgetItem()
+                    item.setIcon(ui.get_file_icon(file_path))
+                    item.setText(i)
+                    ui.listWidget.addItem(item)
             else:
                 try:
-                    subprocess.Popen(['gio', 'open', position])
+                    subprocess.Popen(['xdg-open', position])
                 except: 
                     try:
-                        # 使用 chardet 库检测文件编码
+                        #使用 chardet 库检测文件编码
                         with open(position, 'rb') as f:
                             detector = chardet.universaldetector.UniversalDetector()
                             for line in f:
@@ -259,7 +295,7 @@ class dispose(QtWidgets.QTabWidget):
                                     break
                             detector.close()
                             encoding = detector.result['encoding']
-                        # 尝试使用检测到的编码重新打开文件
+                        #尝试使用检测到的编码重新打开文件
                         with open(position, 'r', encoding=encoding) as f:
                             ui.textbox.clear()
                             data = f.read()
@@ -275,7 +311,7 @@ class dispose(QtWidgets.QTabWidget):
         except Exception:
             QMessageBox.warning(None, "警告", "发生未知错误！", QMessageBox.Ok)
 
-    def rename(self):   # 重命名
+    def rename(self):   #重命名
         item = ui.listWidget.currentItem()
 
         if item is not None:
@@ -287,23 +323,23 @@ class dispose(QtWidgets.QTabWidget):
                 old_path = os.path.join(dir, current_name)
                 new_path = os.path.join(dir, new_name)
 
-                # 如果新名称不包含文件后缀，发出警告
+                #如果新名称不包含文件后缀，发出警告
                 if '.' not in new_name:
                     QMessageBox.warning(None, "警告", "新文件名缺少文件后缀，请添加后缀。", QMessageBox.Ok)
                     return
 
-                # 如果修改了文件后缀，更新文件格式
+                #如果修改了文件后缀，更新文件格式
                 if new_name.split('.')[-1] != current_name.split('.')[-1]:
                     try:
-                        # 获取文件内容
+                        #获取文件内容
                         with open(old_path, 'r', encoding='utf-8') as file:
                             data = file.read()
 
-                        # 修改文件后缀
+                        #修改文件后缀
                         with open(new_path, 'w', encoding='utf-8') as file:
                             file.write(data)
 
-                        # 删除原文件
+                        #删除原文件
                         os.remove(old_path)
                         item.setText(new_name)
                     except Exception as e:
@@ -320,48 +356,48 @@ class dispose(QtWidgets.QTabWidget):
         else:
             QMessageBox.warning(None, "警告", "请选择需要重命名的文件", QMessageBox.Ok)
 
-    def move(self):  # 移动文件
+    def move(self):  #移动文件
         try:
             if ui.listWidget.currentItem() is None:
-                # 如果用户没有选择任何文件，弹出提示
+                #如果用户没有选择任何文件，弹出提示
                 QMessageBox.information(None, "提示", "请先选择要移动的文件。")
                 return
             
             file_name = ui.listWidget.currentItem().text()
             source = str(dir) + '/' + str(file_name)
 
-            # 弹出文件对话框让用户选择目标文件夹
-            destination = QFileDialog.getExistingDirectory(None, '选择目标文件夹', 'C:/')
+            #弹出文件对话框让用户选择目标文件夹
+            destination = QFileDialog.getExistingDirectory(None, '选择目标文件夹', '/')
 
-            if destination:  # 如果用户选择了目标文件夹
+            if destination:  #如果用户选择了目标文件夹
                 destination_path = os.path.join(destination, file_name)
 
                 if os.path.exists(destination_path):
-                    # 如果目标文件已经存在，询问用户是否覆盖
+                    #如果目标文件已经存在，询问用户是否覆盖
                     reply = QMessageBox.question(None, '文件已存在', '目标文件夹已经存在同名文件，是否覆盖？',
                                                  QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
                     if reply == QMessageBox.Yes:
-                        # 覆盖已存在的文件
+                        #覆盖已存在的文件
                         shutil.move(source, destination_path)
                     else:
-                        # 用户选择不覆盖，不执行移动操作
+                        #用户选择不覆盖，不执行移动操作
                         return
                 else:
-                    # 目标文件夹不存在同名文件，正常移动
+                    #目标文件夹不存在同名文件，正常移动
                     shutil.move(source, destination_path)
 
-                # 更新界面，从文件列表中移除已移动的文件
+                #更新界面，从文件列表中移除已移动的文件
                 ui.listWidget.takeItem(ui.listWidget.currentRow())
         except FileNotFoundError:
             QMessageBox.critical(None, "错误", "找不到文件或目录。")
         except PermissionError:
             QMessageBox.critical(None, "错误", "没有权限执行操作。")
         except Exception as e:
-            # 如果发生其他异常，弹出错误对话框显示错误信息
+            #如果发生其他异常，弹出错误对话框显示错误信息
             QMessageBox.critical(None, "Error", f"移动文件时发生错误：{str(e)}")
 
     def back(self):
-        # 处理返回按钮的逻辑
+        #处理返回按钮的逻辑
         global dir
         current_dir = os.path.abspath(dir)
         parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
@@ -374,7 +410,11 @@ class dispose(QtWidgets.QTabWidget):
 
             file_list = os.listdir(dir)
             for i in file_list:
-                ui.listWidget.addItem(i)
+                file_path = os.path.join(dir, i)
+                item = QtWidgets.QListWidgetItem()
+                item.setIcon(ui.get_file_icon(file_path))
+                item.setText(i)
+                ui.listWidget.addItem(item)
 
 
     def quit(self):     # 退出软件
@@ -385,8 +425,10 @@ class dispose(QtWidgets.QTabWidget):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+
     TabWidget = QtWidgets.QTabWidget()
     ui = Ui_TabWidget()
     ui.setupUi(TabWidget)
     TabWidget.show()
+
     sys.exit(app.exec_())
