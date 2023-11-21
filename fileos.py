@@ -1,5 +1,4 @@
 import sys
-import re
 import os
 import shutil
 import subprocess
@@ -63,6 +62,10 @@ class Ui_TabWidget(object):
         self.rename.setGeometry(QtCore.QRect(550, 400, 121, 41))
         self.rename.setObjectName("rename")
 
+        self.back = QtWidgets.QPushButton(self.tab)
+        self.back.setGeometry(QtCore.QRect(500, 510, 75, 23))
+        self.back.setObjectName("back")
+
         self.quit = QtWidgets.QPushButton(self.tab)
         self.quit.setGeometry(QtCore.QRect(600, 510, 75, 23))
         self.quit.setObjectName("quit")
@@ -77,6 +80,7 @@ class Ui_TabWidget(object):
         self.open.clicked.connect(dispose.open)
         self.move.clicked.connect(dispose.move)
         self.rename.clicked.connect(dispose.rename)
+        self.back.clicked.connect(dispose.back)
         self.quit.clicked.connect(dispose.quit)
 
         self.listWidget.itemDoubleClicked.connect(dispose.open)
@@ -101,6 +105,7 @@ class Ui_TabWidget(object):
         self.open.setText(_translate("TabWidget", "打开文件"))
         self.rename.setText(_translate("TabWidget", "重命名"))
         self.move.setText(_translate("TabWidget","移动文件"))
+        self.back.setText(_translate("TabWidget","返回"))
         self.quit.setText(_translate("TabWidget", "退出"))
         self.textbox.setText(_translate("TabWidget",""))
 
@@ -131,53 +136,58 @@ class dispose(QtWidgets.QTabWidget):
 
     def touch(self):  # 创建文件或文件夹
         try:
-            if ui.listWidget.count() == 0:  # 检查文件列表是否为空
+            #检查文件列表是否为空
+            if ui.listWidget.count() == 0: 
                 QMessageBox.warning(None, "警告", "请先打开文件夹以创建文件或文件夹。", QMessageBox.Ok)
                 return
-
-            # 获取最后打开的文件夹路径
-            last_opened_directory = os.path.dirname(dir) if 'dir' in globals() else ''
             
-            while True:  # 循环直到用户输入一个新的文件名或取消创建
-                # 打开一个对话框，让用户输入文件或文件夹名称
+            while True:
+                #打开一个对话框，让用户输入文件或文件夹名称
                 file_or_folder_name, ok_pressed = QInputDialog.getText(None, "创建文件或文件夹", "输入文件（文件夹）名称:")
                 
-                # 如果用户点击了取消按钮或者未输入名称，退出循环
+                #如果用户点击了取消按钮或者未输入名称，退出循环
                 if not ok_pressed or not file_or_folder_name:
                     break
                 
                 file_path = os.path.join(dir, file_or_folder_name)
                 if '.' in file_or_folder_name:
                     reply = None
-                    if os.path.exists(file_path):  # 检查文件是否已存在
-                        while True:  # 循环直到用户重新输入一个新的文件名或取消创建
+                    #检查文件是否已存在
+                    if os.path.exists(file_path):  
+                        #循环直到用户重新输入一个新的文件名或取消创建
+                        while True:  
                             reply = QMessageBox.question(None, "警告", "文件已存在。是否要重新创建文件？", QMessageBox.Yes | QMessageBox.No)
+                            #用户选择重新输入文件名，退出内层循环
                             if reply == QMessageBox.Yes:
-                                break  # 用户选择重新输入文件名，退出内层循环
+                                break  
+                            #用户选择取消创建，退出内层循环
                             elif reply == QMessageBox.No:
-                                break  # 用户选择取消创建，退出内层循环
+                                break  
+                    #用户选择重新输入文件名，继续外层循环
                     if reply == QMessageBox.Yes:
-                        continue  # 用户选择重新输入文件名，继续外层循环
+                        continue 
+                    #用户选择取消创建，退出外层循环
                     elif reply == QMessageBox.No:
-                        break  # 用户选择取消创建，退出外层循环
+                        break  
                     else:
                         #创建文件
                         with open(file_path, 'w') as file:
-                            pass  # 在这里进行文件操作，比如写入内容
+                            pass
                         #将新创建的文件名称添加到左侧的文件列表中
                         ui.listWidget.addItem(file_or_folder_name)
                         #文件创建成功，退出外层循环
                         break  
                 else:
-                    if os.path.exists(file_path):  # 检查文件夹是否已存在
+                    #检查文件夹是否已存在
+                    if os.path.exists(file_path):  
                         QMessageBox.warning(None, "警告", "文件夹已存在。", QMessageBox.Ok)
                     else:
-                        # 创建文件夹
+                        #创建文件夹
                         os.makedirs(file_path, exist_ok=True)
                         print(f"文件夹 '{file_path}' 创建成功。")
-                        # 将新创建的文件夹名称添加到左侧的文件列表中
+                        #将新创建的文件夹名称添加到左侧的文件列表中
                         ui.listWidget.addItem(file_or_folder_name)
-                        break  # 文件夹创建成功，退出外层循环
+                        break  
         except Exception as e:
             print(f"创建文件或文件夹时出现错误: {e}")
 
@@ -210,7 +220,6 @@ class dispose(QtWidgets.QTabWidget):
                     return
             else:
                 QMessageBox.warning(None, "警告", "路径不存在!", QMessageBox.Ok)
-
         except FileNotFoundError:
             QMessageBox.warning(None, "警告", "文件不存在!", QMessageBox.Ok)
         except PermissionError:
@@ -238,8 +247,8 @@ class dispose(QtWidgets.QTabWidget):
                     ui.listWidget.addItem(i)
             else:
                 try:
-                    subprocess.Popen(['xdg-open', position])
-                except:
+                    subprocess.Popen(['gio', 'open', position])
+                except: 
                     try:
                         # 使用 chardet 库检测文件编码
                         with open(position, 'rb') as f:
@@ -266,7 +275,7 @@ class dispose(QtWidgets.QTabWidget):
         except Exception:
             QMessageBox.warning(None, "警告", "发生未知错误！", QMessageBox.Ok)
 
-    def rename(self):
+    def rename(self):   # 重命名
         item = ui.listWidget.currentItem()
 
         if item is not None:
@@ -278,12 +287,36 @@ class dispose(QtWidgets.QTabWidget):
                 old_path = os.path.join(dir, current_name)
                 new_path = os.path.join(dir, new_name)
 
-                try:
-                    os.rename(old_path, new_path)
-                    item.setText(new_name)
-                    print(f"成功重命名为: {new_name}")
-                except Exception as e:
-                    print(f"重命名失败: {e}")
+                # 如果新名称不包含文件后缀，发出警告
+                if '.' not in new_name:
+                    QMessageBox.warning(None, "警告", "新文件名缺少文件后缀，请添加后缀。", QMessageBox.Ok)
+                    return
+
+                # 如果修改了文件后缀，更新文件格式
+                if new_name.split('.')[-1] != current_name.split('.')[-1]:
+                    try:
+                        # 获取文件内容
+                        with open(old_path, 'r', encoding='utf-8') as file:
+                            data = file.read()
+
+                        # 修改文件后缀
+                        with open(new_path, 'w', encoding='utf-8') as file:
+                            file.write(data)
+
+                        # 删除原文件
+                        os.remove(old_path)
+                        item.setText(new_name)
+                    except Exception as e:
+                        QMessageBox.warning(None, "警告", "修改文件格式失败！", QMessageBox.Ok)
+                        return
+                else:
+                    try:
+                        os.rename(old_path, new_path)
+                        item.setText(new_name)
+                        print(f"成功重命名为: {new_name}")
+                    except Exception as e:
+                        print(f"重命名失败: {e}")
+                        QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
         else:
             QMessageBox.warning(None, "警告", "请选择需要重命名的文件", QMessageBox.Ok)
 
@@ -326,6 +359,23 @@ class dispose(QtWidgets.QTabWidget):
         except Exception as e:
             # 如果发生其他异常，弹出错误对话框显示错误信息
             QMessageBox.critical(None, "Error", f"移动文件时发生错误：{str(e)}")
+
+    def back(self):
+        # 处理返回按钮的逻辑
+        global dir
+        current_dir = os.path.abspath(dir)
+        parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+
+        if current_dir != parent_dir:
+            # 如果当前目录不是根目录，返回上一级目录
+            dir = parent_dir
+            ui.textbox.clear()
+            ui.listWidget.clear()
+
+            file_list = os.listdir(dir)
+            for i in file_list:
+                ui.listWidget.addItem(i)
+
 
     def quit(self):     # 退出软件
         # 退出时会有弹框提示用户是否确认退出
