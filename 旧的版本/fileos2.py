@@ -459,6 +459,7 @@ class dispose(QtWidgets.QTabWidget):
                         with open(file_path, 'w') as file:
                             pass
                         file = os.listdir(dir)
+                        ui.listWidget.clear()
                         for i in file:
                             file_path = os.path.join(dir, i)
                             item = QtWidgets.QListWidgetItem()
@@ -476,6 +477,7 @@ class dispose(QtWidgets.QTabWidget):
                         #创建文件夹
                         os.makedirs(file_path, exist_ok=True)
                         #将新创建的文件夹名称添加到左侧的文件列表中
+                        ui.listWidget.clear()
                         file = os.listdir(dir)
                         for i in file:
                             file_path = os.path.join(dir, i)
