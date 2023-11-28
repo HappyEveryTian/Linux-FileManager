@@ -566,50 +566,49 @@ class dispose(QtWidgets.QTabWidget):
         except Exception:
             QMessageBox.warning(None, "警告", "发生未知错误！", QMessageBox.Ok)
 
-    def rename(self):   #重命名
+    def rename(self):   # 重命名
         item = ui.listWidget.currentItem()
-
+    
         if item is not None:
             current_name = item.text()
-
+    
             new_name, ok_pressed = QInputDialog.getText(None, "Rename", "Enter new name:", QLineEdit.Normal, current_name)
-
+    
             if ok_pressed and new_name != current_name:
                 old_path = os.path.join(dir, current_name)
                 new_path = os.path.join(dir, new_name)
-
-                #如果新名称不包含文件后缀，发出警告
-                if '.' not in new_name:
+    
+                is_directory = os.path.isdir(old_path)
+    
+                # 如果不是文件夹，就不看文件后缀
+                if not is_directory and '.' not in new_name:
                     QMessageBox.warning(None, "警告", "新文件名缺少文件后缀，请添加后缀。", QMessageBox.Ok)
                     return
-
-                #如果修改了文件后缀，更新文件格式
-                if new_name.split('.')[-1] != current_name.split('.')[-1]:
-                    try:
-                        #获取文件内容
+    
+                try:
+                    # 如果修改了文件后缀，更新文件格式
+                    if not is_directory and new_name.split('.')[-1] != current_name.split('.')[-1]:
+                        # 获取文件内容
                         with open(old_path, 'r', encoding='utf-8') as file:
                             data = file.read()
-
-                        #修改文件后缀
+    
+                        # 修改文件后缀
                         with open(new_path, 'w', encoding='utf-8') as file:
                             file.write(data)
-
-                        #删除原文件
+    
+                        # 删除原文件
                         os.remove(old_path)
                         item.setText(new_name)
-                    except Exception as e:
-                        QMessageBox.warning(None, "警告", "修改文件格式失败！", QMessageBox.Ok)
-                        return
-                else:
-                    try:
+                    else:
+                        # Rename files or directories
                         os.rename(old_path, new_path)
                         item.setText(new_name)
                         print(f"成功重命名为: {new_name}")
-                    except Exception as e:
-                        print(f"重命名失败: {e}")
-                        QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
+                except Exception as e:
+                    print(f"重命名失败: {e}")
+                    QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
         else:
-            QMessageBox.warning(None, "警告", "请选择需要重命名的文件", QMessageBox.Ok)
+            QMessageBox.warning(None, "警告", "请选择需要重命名的文件或文件夹", QMessageBox.Ok)
 
     def move(self):  #移动文件
         try:
@@ -865,50 +864,49 @@ class DisposeTab2(QtWidgets.QTabWidget):
         except Exception:
             QMessageBox.warning(None, "警告", "发生未知错误！", QMessageBox.Ok)
 
-    def rename(self):   #重命名
+    def rename(self):   # 重命名
         item = ui1.listWidget1.currentItem()
-
+    
         if item is not None:
             current_name = item.text()
-
+    
             new_name, ok_pressed = QInputDialog.getText(None, "Rename", "Enter new name:", QLineEdit.Normal, current_name)
-
+    
             if ok_pressed and new_name != current_name:
-                old_path = os.path.join(dir, current_name)
-                new_path = os.path.join(dir, new_name)
-
-                #如果新名称不包含文件后缀，发出警告
-                if '.' not in new_name:
+                old_path = os.path.join(dir1, current_name)
+                new_path = os.path.join(dir1, new_name)
+    
+                is_directory = os.path.isdir(old_path)
+    
+                # 如果不是文件夹，就不看文件后缀
+                if not is_directory and '.' not in new_name:
                     QMessageBox.warning(None, "警告", "新文件名缺少文件后缀，请添加后缀。", QMessageBox.Ok)
                     return
-
-                #如果修改了文件后缀，更新文件格式
-                if new_name.split('.')[-1] != current_name.split('.')[-1]:
-                    try:
-                        #获取文件内容
+    
+                try:
+                    # 如果修改了文件后缀，更新文件格式
+                    if not is_directory and new_name.split('.')[-1] != current_name.split('.')[-1]:
+                        # 获取文件内容
                         with open(old_path, 'r', encoding='utf-8') as file:
                             data = file.read()
-
-                        #修改文件后缀
+    
+                        # 修改文件后缀
                         with open(new_path, 'w', encoding='utf-8') as file:
                             file.write(data)
-
-                        #删除原文件
+    
+                        # 删除原文件
                         os.remove(old_path)
                         item.setText(new_name)
-                    except Exception as e:
-                        QMessageBox.warning(None, "警告", "修改文件格式失败！", QMessageBox.Ok)
-                        return
-                else:
-                    try:
+                    else:
+                        # Rename files or directories
                         os.rename(old_path, new_path)
                         item.setText(new_name)
                         print(f"成功重命名为: {new_name}")
-                    except Exception as e:
-                        print(f"重命名失败: {e}")
-                        QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
+                except Exception as e:
+                    print(f"重命名失败: {e}")
+                    QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
         else:
-            QMessageBox.warning(None, "警告", "请选择需要重命名的文件", QMessageBox.Ok)
+            QMessageBox.warning(None, "警告", "请选择需要重命名的文件或文件夹", QMessageBox.Ok)
 
     def move(self):  #移动文件
         try:
@@ -1169,50 +1167,49 @@ class DisposeTab3(QtWidgets.QTabWidget):
         except Exception:
             QMessageBox.warning(None, "警告", "发生未知错误！", QMessageBox.Ok)
 
-    def rename(self):   #重命名
+    def rename(self):   # 重命名
         item = ui2.listWidget2.currentItem()
-
+    
         if item is not None:
             current_name = item.text()
-
+    
             new_name, ok_pressed = QInputDialog.getText(None, "Rename", "Enter new name:", QLineEdit.Normal, current_name)
-
+    
             if ok_pressed and new_name != current_name:
                 old_path = os.path.join(dir2, current_name)
                 new_path = os.path.join(dir2, new_name)
-
-                #如果新名称不包含文件后缀，发出警告
-                if '.' not in new_name:
+    
+                is_directory = os.path.isdir(old_path)
+    
+                # 如果不是文件夹，就不看文件后缀
+                if not is_directory and '.' not in new_name:
                     QMessageBox.warning(None, "警告", "新文件名缺少文件后缀，请添加后缀。", QMessageBox.Ok)
                     return
-
-                #如果修改了文件后缀，更新文件格式
-                if new_name.split('.')[-1] != current_name.split('.')[-1]:
-                    try:
-                        #获取文件内容
+    
+                try:
+                    # 如果修改了文件后缀，更新文件格式
+                    if not is_directory and new_name.split('.')[-1] != current_name.split('.')[-1]:
+                        # 获取文件内容
                         with open(old_path, 'r', encoding='utf-8') as file:
                             data = file.read()
-
-                        #修改文件后缀
+    
+                        # 修改文件后缀
                         with open(new_path, 'w', encoding='utf-8') as file:
                             file.write(data)
-
-                        #删除原文件
+    
+                        # 删除原文件
                         os.remove(old_path)
                         item.setText(new_name)
-                    except Exception as e:
-                        QMessageBox.warning(None, "警告", "修改文件格式失败！", QMessageBox.Ok)
-                        return
-                else:
-                    try:
+                    else:
+                        # Rename files or directories
                         os.rename(old_path, new_path)
                         item.setText(new_name)
                         print(f"成功重命名为: {new_name}")
-                    except Exception as e:
-                        print(f"重命名失败: {e}")
-                        QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
+                except Exception as e:
+                    print(f"重命名失败: {e}")
+                    QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
         else:
-            QMessageBox.warning(None, "警告", "请选择需要重命名的文件", QMessageBox.Ok)
+            QMessageBox.warning(None, "警告", "请选择需要重命名的文件或文件夹", QMessageBox.Ok)
 
     def move(self):  #移动文件
         try:
