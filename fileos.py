@@ -28,7 +28,7 @@ class Ui_TabWidget(object):
         #获取调色板
         palette = QtGui.QPalette()
         #设置背景图片
-        palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(QtGui.QPixmap('')))
+        palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(QtGui.QPixmap('./background/background1.png')))
         #应用到窗口上
         self.tab.setPalette(palette)
         #设置图片自适应窗口
@@ -152,7 +152,7 @@ class Ui_TabWidget2(object):
         #获取调色板
         palette = QtGui.QPalette()
         #设置背景图片
-        palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(QtGui.QPixmap('')))
+        palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(QtGui.QPixmap('./background/background2.jpg')))
         #应用到窗口上
         self.tab1.setPalette(palette)
         #设置图片自适应窗口
@@ -283,7 +283,7 @@ class Ui_TabWidget3(object):
         #获取调色板
         palette = QtGui.QPalette()
         #设置背景图片
-        palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(QtGui.QPixmap('')))
+        palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(QtGui.QPixmap('./background/background3.jpg')))
         #应用到窗口上
         self.tab2.setPalette(palette)
         #设置图片自适应窗口
