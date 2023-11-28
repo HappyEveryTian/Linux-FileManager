@@ -25,7 +25,12 @@
   > sudo pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple/ -r requirement.txt
 
 ## 使用指南
-可以使用命令行命令打开，也可通过linux文件管理器双击python打开运行
+可以使用命令行运行python文件使用本程序
+> python3 fileos.py
+
+也可以进入到App文件夹下，找到fileos的可执行文件双击运行
+
+![可执行文件](./asset/程序.png "程序")
 
 
 ## 截图演示
@@ -33,5 +38,3 @@
 ![演示2](./asset/演示2.png "演示2")
 ![演示3](./asset/演示3.png "演示3")
 ## 联系方式
-
-
