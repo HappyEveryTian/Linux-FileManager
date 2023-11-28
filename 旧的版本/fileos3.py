@@ -441,6 +441,7 @@ class dispose(QtWidgets.QTabWidget):
                         with open(file_path, 'w') as file:
                             pass
                         file = os.listdir(dir)
+                        ui.listWidget.clear()
                         for i in file:
                             file_path = os.path.join(dir, i)
                             item = QtWidgets.QListWidgetItem()
@@ -459,6 +460,7 @@ class dispose(QtWidgets.QTabWidget):
                         os.makedirs(file_path, exist_ok=True)
                         #将新创建的文件夹名称添加到左侧的文件列表中
                         file = os.listdir(dir)
+                        ui.listWidget.clear()
                         for i in file:
                             file_path = os.path.join(dir, i)
                             item = QtWidgets.QListWidgetItem()
@@ -697,8 +699,6 @@ class DisposeTab2(QtWidgets.QTabWidget):
             item.setText(i)
             ui1.listWidget1.addItem(item)
             
-            
-        
 
     def touch(self):  #创建文件或文件夹
         try:
@@ -759,6 +759,7 @@ class DisposeTab2(QtWidgets.QTabWidget):
                         os.makedirs(file_path, exist_ok=True)
                         #将新创建的文件夹名称添加到左侧的文件列表中
                         file1 = os.listdir(dir1)
+                        ui1.listWidget1.clear()
                         for i in file1:
                             file_path = os.path.join(dir1, i)
                             item = QtWidgets.QListWidgetItem()
@@ -1047,6 +1048,7 @@ class DisposeTab3(QtWidgets.QTabWidget):
                         with open(file_path, 'w') as file:
                             pass
                         file2 = os.listdir(dir2)
+                        ui2.listWidget2.clear()
                         for i in file2:
                             file_path = os.path.join(dir2, i)
                             item = QtWidgets.QListWidgetItem()
