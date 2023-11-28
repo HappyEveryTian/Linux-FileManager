@@ -599,10 +599,12 @@ class dispose(QtWidgets.QTabWidget):
                         # 删除原文件
                         os.remove(old_path)
                         item.setText(new_name)
+                        item.setIcon(ui.get_file_icon(file_path))
                     else:
                         # Rename files or directories
                         os.rename(old_path, new_path)
                         item.setText(new_name)
+                        item.setIcon(ui.get_file_icon(file_path))
                         print(f"成功重命名为: {new_name}")
                 except Exception as e:
                     print(f"重命名失败: {e}")
@@ -897,10 +899,12 @@ class DisposeTab2(QtWidgets.QTabWidget):
                         # 删除原文件
                         os.remove(old_path)
                         item.setText(new_name)
+                        item.setIcon(ui1.get_file_icon(file_path))
                     else:
                         # Rename files or directories
                         os.rename(old_path, new_path)
                         item.setText(new_name)
+                        item.setIcon(ui1.get_file_icon(file_path))
                         print(f"成功重命名为: {new_name}")
                 except Exception as e:
                     print(f"重命名失败: {e}")
@@ -1200,10 +1204,12 @@ class DisposeTab3(QtWidgets.QTabWidget):
                         # 删除原文件
                         os.remove(old_path)
                         item.setText(new_name)
+                        item.setIcon(ui2.get_file_icon(file_path))
                     else:
                         # Rename files or directories
                         os.rename(old_path, new_path)
                         item.setText(new_name)
+                        item.setIcon(ui2.get_file_icon(file_path))
                         print(f"成功重命名为: {new_name}")
                 except Exception as e:
                     print(f"重命名失败: {e}")
