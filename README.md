@@ -7,6 +7,8 @@
     通过深入了解现有挑战并设计解决方案，本文件管理系统可以帮助用户更有效地管理其文件、提高工作效率。
 
 ## 项目安装
+如果不想进行环境配置的小伙伴可以跳过这一步，直接看下面的使用指南的第二部分就好啦
+
 将本项目源码下载到本地上后，进入到项目文件夹中，运行以下代码：
 
 > pip3 install -r requirements.txt
@@ -25,12 +27,12 @@
   > sudo pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple/ -r requirement.txt
 
 ## 使用指南
-可以使用命令行运行python文件使用本程序
+1. 可以使用命令行运行python文件使用本程序
 > python3 fileos.py
 
 ---
 
-也可以进入到App文件夹下，找到fileos的可执行文件双击运行
+2. 也可以进入到App文件夹下，找到fileos的可执行文件双击运行
 
 ![程序](./asset/程序.png "可执行文件")
 
