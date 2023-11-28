@@ -4,3 +4,4 @@ PyQt5-sip==4.19.14
 python-dateutil==2.8.0
 pytz==2018.9
 six==1.12.0
+chardet==5.2.0
