@@ -498,10 +498,24 @@ class dispose(QtWidgets.QTabWidget):
                     #根据文件或文件夹进行相应的删除
                     if os.path.isfile(location):
                         os.remove(location)
-                        ui.listWidget.takeItem(ui.listWidget.row(current_item))
+                        ui.listWidget.clear()
+                        file = os.listdir(dir)
+                        for i in file:
+                            file_path = os.path.join(dir, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui.get_file_icon(file_path))
+                            item.setText(i)
+                            ui.listWidget.addItem(item)
                     elif os.path.isdir(location):
                         shutil.rmtree(location)
-                        ui.listWidget.takeItem(ui.listWidget.row(current_item))
+                        ui.listWidget.clear()
+                        file = os.listdir(dir)
+                        for i in file:
+                            file_path = os.path.join(dir, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui.get_file_icon(file_path))
+                            item.setText(i)
+                            ui.listWidget.addItem(item)
                 #如果取消，则返回到主界面
                 else:
                     return
@@ -605,7 +619,6 @@ class dispose(QtWidgets.QTabWidget):
                         os.rename(old_path, new_path)
                         item.setText(new_name)
                         item.setIcon(ui.get_file_icon(new_path))
-                        print(f"成功重命名为: {new_name}")
                 except Exception as e:
                     print(f"重命名失败: {e}")
                     QMessageBox.warning(None, "警告", "重命名失败！", QMessageBox.Ok)
@@ -643,7 +656,14 @@ class dispose(QtWidgets.QTabWidget):
                     shutil.move(source, destination_path)
 
                 #更新界面，从文件列表中移除已移动的文件
-                ui.listWidget.takeItem(ui.listWidget.currentRow())
+                ui.listWidget.clear()
+                file_list = os.listdir(dir)
+                for i in file_list:
+                    file_path = os.path.join(dir, i)
+                    item = QtWidgets.QListWidgetItem()
+                    item.setIcon(ui.get_file_icon(file_path))
+                    item.setText(i)
+                    ui.listWidget.addItem(item)
         except FileNotFoundError:
             QMessageBox.critical(None, "错误", "找不到文件或目录。")
         except PermissionError:
@@ -798,10 +818,28 @@ class DisposeTab2(QtWidgets.QTabWidget):
                     #根据文件或文件夹进行相应的删除
                     if os.path.isfile(location):
                         os.remove(location)
-                        ui1.listWidget1.takeItem(ui.listWidget.row(current_item))
+                        #输出文件列表
+                        ui1.listWidget1.clear()
+                        file1 = os.listdir(dir1)
+                        for i in file1:
+                            file_path = os.path.join(dir1, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui1.get_file_icon(file_path))
+                            item.setText(i)
+                            item.setToolTip(i)
+                            ui1.listWidget1.addItem(item)
                     elif os.path.isdir(location):
                         shutil.rmtree(location)
-                        ui1.listWidget1.takeItem(ui.listWidget.row(current_item))
+                        #输出文件列表
+                        ui1.listWidget1.clear()
+                        file1 = os.listdir(dir1)
+                        for i in file1:
+                            file_path = os.path.join(dir1, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui1.get_file_icon(file_path))
+                            item.setText(i)
+                            item.setToolTip(i)
+                            ui1.listWidget1.addItem(item)
                 #如果取消，则返回到主界面
                 else:
                     return
@@ -943,7 +981,16 @@ class DisposeTab2(QtWidgets.QTabWidget):
                     shutil.move(source, destination_path)
 
                 #更新界面，从文件列表中移除已移动的文件
-                ui1.listWidget1.takeItem(ui1.listWidget1.currentRow())
+                #输出文件列表
+                ui1.listWidget1.clear()
+                file1 = os.listdir(dir1)
+                for i in file1:
+                    file_path = os.path.join(dir1, i)
+                    item = QtWidgets.QListWidgetItem()
+                    item.setIcon(ui1.get_file_icon(file_path))
+                    item.setText(i)
+                    item.setToolTip(i)
+                    ui1.listWidget1.addItem(item)
         except FileNotFoundError:
             QMessageBox.critical(None, "错误", "找不到文件或目录。")
         except PermissionError:
@@ -1106,10 +1153,24 @@ class DisposeTab3(QtWidgets.QTabWidget):
                     #根据文件或文件夹进行相应的删除
                     if os.path.isfile(location):
                         os.remove(location)
-                        ui2.listWidget2.takeItem(ui2.listWidget2.row(current_item))
+                        ui2.listWidget2.clear()
+                        file_list = os.listdir(dir2)
+                        for i in file_list:
+                            file_path = os.path.join(dir2, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui2.get_file_icon(file_path))
+                            item.setText(i)
+                            ui2.listWidget2.addItem(item)
                     elif os.path.isdir(location):
                         shutil.rmtree(location)
-                        ui2.listWidget2.takeItem(ui2.listWidget2.row(current_item))
+                        ui2.listWidget2.clear()
+                        file_list = os.listdir(dir2)
+                        for i in file_list:
+                            file_path = os.path.join(dir2, i)
+                            item = QtWidgets.QListWidgetItem()
+                            item.setIcon(ui2.get_file_icon(file_path))
+                            item.setText(i)
+                            ui2.listWidget2.addItem(item)
                 #如果取消，则返回到主界面
                 else:
                     return
@@ -1248,7 +1309,14 @@ class DisposeTab3(QtWidgets.QTabWidget):
                     shutil.move(source, destination_path)
 
                 #更新界面，从文件列表中移除已移动的文件
-                ui2.listWidget2.takeItem(ui2.listWidget2.currentRow())
+                ui2.listWidget2.clear()
+                file_list = os.listdir(dir2)
+                for i in file_list:
+                    file_path = os.path.join(dir2, i)
+                    item = QtWidgets.QListWidgetItem()
+                    item.setIcon(ui2.get_file_icon(file_path))
+                    item.setText(i)
+                    ui2.listWidget2.addItem(item)
         except FileNotFoundError:
             QMessageBox.critical(None, "错误", "找不到文件或目录。")
         except PermissionError:
