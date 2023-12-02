@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 更新yum源
-yum upgrade
+yum upgrade -y
 
 # 安装python3
 yum install python3
@@ -16,6 +16,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo "安装psutil失败，请检查错误信息。"
         exit 1
+    fi
 fi
 
 # 安装PyQt5
@@ -25,6 +26,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo "安装PyQt5失败，请检查错误信息。"
         exit 1
+    fi
 fi
 
 # 安装PyQt5-sip
@@ -34,6 +36,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo "安装PyQt5-sip失败，请检查错误信息。"
         exit 1
+    fi
 fi
 
 # 安装python-dateutil
@@ -43,6 +46,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo "安装python-dateutil失败，请检查错误信息。"
         exit 1
+    fi
 fi
 
 # 安装pytz
@@ -52,6 +56,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo "安装pytz失败，请检查错误信息。"
         exit 1
+    fi
 fi
 
 # 安装six
@@ -61,6 +66,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo "安装six失败，请检查错误信息。"
         exit 1
+    fi
 fi
 
 # 安装chardet
@@ -70,6 +76,7 @@ if [ $? -ne 0 ]; then
     if [ $? -ne 0 ]; then
         echo "安装chardet失败，请检查错误信息。"
         exit 1
+    fi
 fi
 
 echo "所有包已成功安装!。"
